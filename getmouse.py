@@ -18,8 +18,7 @@ class GetMouse():
         self.listener.stop()
         
     def on_move(self,x, y):
-        print('Pointer moved to {0}'.format(
-            (x, y)))
+        #print('Pointer moved to {0}'.format((x, y)))
         self.pos=[x,y]
 
     def on_click(self,x, y, button, pressed):
@@ -33,9 +32,8 @@ class GetMouse():
             #return False
 
     def on_scroll(self,x, y, dx, dy):
-        print('Scrolled {0} at {1}'.format(
-            'down' if dy < 0 else 'up',
-            (x, y)))
+        pass
+        #print('Scrolled {0} at {1}'.format('down' if dy < 0 else 'up',(x, y)))
     def getpts(self):
         #get clicked points
         return self.pts

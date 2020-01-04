@@ -6,13 +6,13 @@ from getkey import GetKey
 from getmouse import GetMouse 
 import time
 import os
+import sys
 
 class GetScreen():
     def __init__(self):
         self.sct = mss()
+        self.im1=None
     
-        
-            
         kobj = GetKey()
         print('Press r and select roi using mouse leftbutton diagonal clicks ')
         while True:
@@ -22,6 +22,7 @@ class GetScreen():
             if kflag:
                 print('\rkey pressed: ',kflag)
                 kobj.stop()
+                sys.stdout.flush()
                 break
             
         mobj = GetMouse()
@@ -30,15 +31,14 @@ class GetScreen():
         while True:
             time.sleep(.5)
             pts = mobj.getpts()
-            pos = mobj.pos
+            
             if len(pts)==1:
                 if not pt1:
                     pt1 = pts[0]
-                    print('pt1: ',pt1)
+                pt2 = mobj.pos
                     
-                elif not pt2:
-                    pt2 = pos
-            elif len(pts)==2:
+            elif len(pts)>=2:
+                mobj.stop()
                 break
                            
         print('box pts: ',pt1,pt2)
@@ -47,12 +47,13 @@ class GetScreen():
         
     def getimg(self):
         t2 = time.time()
-        sct_img = np.array(self.sct.grab(self.bounding_box))
-        im = cv2.cvtColor(sct_img, cv2.COLOR_BGR2RGB)
         
-        print('FPS: {} ',format(1/(t2-self.t1)))
+        im = np.array(self.sct.grab(self.bounding_box))
+            
+
+        #print('FPS: {} ',format(1/(t2-self.t1)))
         self.t1=t2
-        return im,t2
+        return im,self.t1
         
 if __name__ == '__main__': 
 
@@ -61,18 +62,18 @@ if __name__ == '__main__':
         os.makedirs(dst) 
         
     scobj=GetScreen()
-    
+    cv2.namedWindow('crop', cv2.WINDOW_NORMAL)
     
     while True:
         im,t2 = scobj.getimg()
-        cv2.imshow('screen', im)
+        cv2.imshow('crop', im)
         
         if cv2.waitKey(1) == 27:
             cv2.destroyAllWindows()
             break
         nam = os.path.join(dst, str(int(t2* 10**7))+'.jpg')
         #import pdb;pdb.set_trace()
-        cv2.imwrite(nam,im)
+        #cv2.imwrite(nam,im)
         
         
         

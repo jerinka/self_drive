@@ -6,6 +6,7 @@ class to manage keypress, returns keys that wr pressed on being continued to be 
 '''
 class GetKey():
     def __init__(self):
+        print('GetKey constructor')
         self.keyp=[]#
         self.keyr=[]
         
@@ -14,10 +15,15 @@ class GetKey():
             on_press=self.on_press,
             on_release=self.on_release)
         self.listener.start()
+    def __del__(self):
+        self.listener.stop()
+        print('GetKey destroctor')
+        
     def stop(self):
         print('stopping listener')
         self.listener.stop()
     def on_press(self,key):
+        #import pdb;pdb.set_trace()
         try:
             if key.char not in self.keyp:
                 self.keyp.append(key.char)
@@ -25,10 +31,13 @@ class GetKey():
             
         except AttributeError:
             #self.keyp.append(key.char)
-            print('special key {0} pressed'.format(key))
+            #print('special key {0} pressed'.format(key.name))
+            self.keyp.append(key.name)
+            '''
             if key == keyboard.Key.esc:
                 # Stop listener
                 print('esc pressed')
+            '''
 
     def on_release(self,key):
         try:
@@ -36,7 +45,8 @@ class GetKey():
                     self.keyr.append(key.char)
             #print('{0} released'.format(self.keyr))
         except AttributeError:
-            print('special key {0} released'.format(key))
+            self.keyr.append(key.name)
+            #print('special key {0} released'.format(key))
             
     def get_pressed_keys(self):
         #returns keys pressed 
@@ -45,6 +55,7 @@ class GetKey():
         #print('{0} released2'.format(self.keyr))
         self.keyp=list(set(self.keyp)-set(self.keyr))
         self.keyr=[]
+        sys.stdout.flush()
         return k
         
     def checkforkey(self,key):
@@ -59,16 +70,22 @@ class GetKey():
             
 if __name__ == '__main__':       
     kobj = GetKey()
+    keys=[]
     while 1:
         time.sleep(.5)
         
         keys = kobj.get_pressed_keys()
-        print('Keys pressed: ',keys)
+        if keys:
+            print('Keys pressed: ',keys)
         
         '''
         kflag = kobj.checkforkey('r')
         print('kflag: ',kflag)
         '''
+        
+        if keys:
+            if keys[-1]=='esc':
+                break
     
 
     
